@@ -1,5 +1,5 @@
-import { Button, Card, Divider, Grid, LinearProgress, List, ListItem, makeStyles, Typography } from '@material-ui/core'
-import React, { useEffect } from 'react'
+import { Button, Card, Divider, FormControl, Grid, InputLabel, LinearProgress, List, ListItem, makeStyles, MenuItem, Select, Typography } from '@material-ui/core'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'
 import { listProductDetails } from '../actions/productActions';
@@ -19,8 +19,11 @@ const useStyles = makeStyles((theme) =>({
   }));
   
 
-const ProductScreen = ({match}) => {
+//history can be used and called as a prop  
+
+const ProductScreen = ({history, match}) => {
     const classes = useStyles()
+    const [qty, setQty] = useState(1)
     const dispatch = useDispatch()
     const productDetails = useSelector(state => state.productDetails )
 
@@ -29,7 +32,9 @@ const ProductScreen = ({match}) => {
     },[match, dispatch])
 
     const { product, error, loading} = productDetails
-  
+    const addToCartHandler = () => {
+        history.push( `/cart/${match.params.id}?qty=${qty}`)
+    }
 
     return (
         <div>
@@ -81,11 +86,37 @@ const ProductScreen = ({match}) => {
                                             {product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
                                         </Grid>
                                 </ListItem>
+                                {product.countInStock > 0 && (
+                                    <ListItem>
+                                        <Grid item xs={6}>
+                                            Qty:
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                        <FormControl fullWidth size='small' >
+                                            <Select
+                                            labelId="demo-simple-select-outlined-label"
+                                            id="demo-simple-select-outlined"
+                                            value={qty}
+                                            onChange={e => setQty(e.target.value)}
+                                            label="Age"
+                                            >
+                                            {[...Array(product.countInStock).keys()].map((x)=> (
+                                                <MenuItem key={x+1} value={x+1}>
+                                                {x+1}
+                                                </MenuItem>
+                                            ))}
+                                           
+                                            </Select>
+                                        </FormControl>
+                                        </Grid>
+                                    </ListItem>
+                                )}
                                 <ListItem>
                                     <Button fullWidth style={{ backgroundColor: '#393836', color:'#fff'}}
                                      disabled={product.countInStock === 0}
                                      classes={{ disabled: classes.disabledButton }}
-                                     variant='contained'>
+                                     variant='contained'
+                                     onClick = {addToCartHandler} >
                                         Add To Cart
                                     </Button>
                                 </ListItem>

@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import HomeScreen from './screens/HomeScreen';
 import { Container } from '@material-ui/core';
 import ProductScreen from './screens/ProductScreen';
+import CartScreen from './screens/CartScreen';
 
 function App() {
   return (
@@ -14,6 +15,8 @@ function App() {
        <Container>
           <Route path='/' component={HomeScreen} exact/>
           <Route path='/product/:id' component={ProductScreen} />
+          {/* '?' after id is used to make id optional in the url */}
+          <Route path='/cart/:id?' component={CartScreen} /> 
        </Container>
      </main>
      <Footer/>
