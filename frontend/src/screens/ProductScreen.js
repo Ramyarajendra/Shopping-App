@@ -1,6 +1,9 @@
-import { Button, Card, Divider, Grid, List, ListItem, makeStyles, Typography } from '@material-ui/core'
-import React from 'react'
+import { Button, Card, Divider, Grid, LinearProgress, List, ListItem, makeStyles, Typography } from '@material-ui/core'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'
+import { listProductDetails } from '../actions/productActions';
+import Message from '../components/Message';
 import Ratings from '../components/Ratings';
 import products from '../products'
 
@@ -18,7 +21,16 @@ const useStyles = makeStyles((theme) =>({
 
 const ProductScreen = ({match}) => {
     const classes = useStyles()
-    const product = products.find( p=> p._id === match.params.id)
+    const dispatch = useDispatch()
+    const productDetails = useSelector(state => state.productDetails )
+
+    useEffect(()=>{
+        dispatch(listProductDetails(match.params.id))
+    },[match, dispatch])
+
+    const { product, error, loading} = productDetails
+  
+
     return (
         <div>
             <Link to='/' className='link-style' >
@@ -26,7 +38,8 @@ const ProductScreen = ({match}) => {
                     Go Back
                 </Button>
             </Link>
-            <Grid container spacing={2} className={classes.gridclass}>
+            {loading ? <LinearProgress/> : error ? <Message severity='error'>{error}</Message>: (
+                <Grid container spacing={2} className={classes.gridclass}>
                     <Grid item xs={12} md={6}>
                         <img src={product.image} alt={product.name} width='100%' height='auto'/>
                     </Grid>
@@ -80,6 +93,8 @@ const ProductScreen = ({match}) => {
                         </Card>
                     </Grid>
             </Grid>
+            )}
+            
         </div>
     )
 }
