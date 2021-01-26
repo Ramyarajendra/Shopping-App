@@ -23,10 +23,20 @@ const userSchema = mongoose.Schema({
 },{
     timestamps: true
 })
- 
+
+//this is for password match during login
 userSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password)
 }
+
+//this is for password encryption while (registering)/saving or modifying password only
+userSchema.pre('save', async function(next){
+    if(!this.isModified('password')){
+        next()
+    }
+    const salt = await bcrypt.genSalt(10)
+    this.password = await bcrypt.hash(this.password, salt)
+})
 
 const User = mongoose.model('User', userSchema)
 
