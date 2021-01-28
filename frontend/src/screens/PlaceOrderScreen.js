@@ -1,10 +1,12 @@
 import { Box, Button, Card, Divider, Grid, List, ListItem, makeStyles } from '@material-ui/core'
-import React from 'react'
+import React, { useEffect } from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import { Link } from 'react-router-dom'
+import { createOrder } from '../actions/orderActions'
 import CheckoutSteps from '../components/CheckoutSteps'
 import FormContainer from '../components/FormContainer'
 import Message from '../components/Message'
+
 
 
 const useStyles = makeStyles((theme) =>({
@@ -13,7 +15,8 @@ const useStyles = makeStyles((theme) =>({
     }
   }));
   
-const PlaceOrderScreen = () => {
+const PlaceOrderScreen = ({history}) => {
+    const dispatch = useDispatch()
     const classes = useStyles()
     const cart = useSelector(state => state.cart)
 
@@ -28,9 +31,31 @@ const PlaceOrderScreen = () => {
     cart.taxPrice = addDecimals(Number((0.10 * cart.itemsPrice).toFixed(2)))
 
     cart.totalPrice =( Number(cart.itemsPrice) + Number(cart.shippingPrice) + Number(cart.taxPrice)).toFixed(2)
+
+
+    const orderCreate = useSelector(state => state.orderCreate)
+
+    const {order, success, error} = orderCreate
+
+
+    useEffect(()=>{
+        if(success){
+            history.push(`/order/${order._id}`)
+        }
+        // eslint-disable-next-line
+    }, [history, success])
    
     const placeOrderHandler = () => {
+        dispatch(createOrder({
+            orderItems: cart.cartItems,
+            shippingAddress: cart.shippingAddress,
+            paymentMethod: cart.paymentMethod,
+            itemsPrice: cart.itemsPrice,
+            taxPrice: cart.taxPrice,
+            shippingPrice: cart.shippingPrice,
+            totalPrice: cart.totalPrice
 
+        }))
     }
     return (
         <>
@@ -119,6 +144,9 @@ const PlaceOrderScreen = () => {
                                     </Grid>
                                     <Grid item xs>${cart.totalPrice}</Grid>
                                 </Grid>
+                            </ListItem>
+                            <ListItem>
+                                {error && <Message severity='danger'>{error}</Message>}
                             </ListItem>
                             <ListItem>
                                 <Button style={{ backgroundColor: '#393836', color:'#fff'}}
