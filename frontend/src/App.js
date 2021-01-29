@@ -12,6 +12,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import ShippingScreen from './screens/ShippingScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
+import OrderScreen from './screens/OrderScreen';
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
           <Route path='/shipping' component={ShippingScreen} />
           <Route path='/payment' component={PaymentScreen} />
           <Route path='/placeorder' component={PlaceOrderScreen} />
+          <Route path='/order/:id' component={OrderScreen} />
+
 
           
           {/* '?' after id is used to make id optional in the url */}
