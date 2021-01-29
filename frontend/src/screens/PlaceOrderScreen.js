@@ -107,7 +107,7 @@ const PlaceOrderScreen = ({history}) => {
                         </ListItem>
                     </List>
                </Grid>
-               <Grid item md={4}>
+               <Grid item xs={12} md={4}>
                     <Card>
                         <List>
                             <ListItem>
