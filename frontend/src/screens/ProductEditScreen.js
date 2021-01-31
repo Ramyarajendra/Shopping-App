@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import {listProductDetails, updateProduct} from '../actions/productActions'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants';
+import axios from 'axios'
 
 
 const useStyles = makeStyles((theme) =>({
@@ -26,6 +27,8 @@ const ProductEditScreen = ({location, history, match}) => {
     const [category, setCategory] = useState('')
     const [countInStock, setCountInStock] = useState(0)
     const [description, setDescription] = useState('')
+    const [uploading, setUploading] = useState(false)
+
 
     
     const dispatch = useDispatch()
@@ -72,6 +75,25 @@ const ProductEditScreen = ({location, history, match}) => {
         }))
        
     }
+    const uploadFileHandler = async(e) => {
+        const file = e.target.files[0]
+        const formData = new FormData()
+        formData.append('image', file)
+        setUploading(true)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type':'multipart/form-data'
+                }
+            }
+            const {data} = await axios.post('/api/upload', formData, config)
+            setImage(data)
+            setUploading(false)
+        } catch (error) {
+            console.log(error);
+            setUploading(false)
+        }
+    }
 
     return (
 
@@ -95,6 +117,8 @@ const ProductEditScreen = ({location, history, match}) => {
                             <Box py={2} >
                                 <InputLabel>Image </InputLabel>
                                 <TextField className={classes.text} variant='outlined' fullWidth type='text' placeholder='Enter Image URL' value={image} onChange={(e) => setImage(e.target.value)} />
+                                <TextField className={classes.text} variant='outlined' fullWidth type='file' placeholder='Enter Image URL' onChange={uploadFileHandler} />
+                                {uploading && <LinearProgress/>}
                             </Box>
                             <Box py={2} >
                                 <InputLabel>Brand </InputLabel>
