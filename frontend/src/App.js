@@ -41,6 +41,7 @@ function App() {
 
           {/* '?' after id is used to make id optional in the url */}
           <Route path='/cart/:id?' component={CartScreen} /> 
+          <Route path='/search/:keyword' component={HomeScreen} />
           <Route path='/' component={HomeScreen} exact/>
 
        </Container>
