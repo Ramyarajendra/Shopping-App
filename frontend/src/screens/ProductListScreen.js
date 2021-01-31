@@ -1,22 +1,22 @@
 import React, { useEffect } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import { deleteUser, listUsers } from '../actions/userActions'
 import {Button, Grid, IconButton, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@material-ui/core'
 import Message from '../components/Message'
-import ClearIcon from '@material-ui/icons/Clear';
-import CheckIcon from '@material-ui/icons/Check';
 import { Link } from 'react-router-dom'
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import { listProducts, deleteProduct, createProduct } from '../actions/productActions'
 import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
+import Paginate from '../components/Paginate'
 
 
 const ProductListScreen = ({history, match}) => {
     const dispatch = useDispatch()
+    const pageNumber = match.params.pageNumber || 1
+
     const productList = useSelector(state => state.productList)
-    const {error, loading, products} = productList
+    const {error, loading, products, page, pages} = productList
 
     const productDelete = useSelector(state => state.productDelete)
     const {error: errorDelete, loading: loadingDelete, success: successDelete} = productDelete
@@ -37,9 +37,9 @@ const ProductListScreen = ({history, match}) => {
         if(successCreate){
             history.push(`/admin/product/${createdProduct._id}/edit`)
         }else{
-            dispatch(listProducts())
+            dispatch(listProducts('', pageNumber))
         }
-    },[dispatch, history, userInfo, successDelete, createdProduct, successCreate])
+    },[dispatch, history, userInfo, successDelete, createdProduct, successCreate, pageNumber])
 
     const deleteHandler = (id) => {
         if(window.confirm('Are you sure')){
@@ -69,6 +69,7 @@ const ProductListScreen = ({history, match}) => {
             {loadingCreate && <LinearProgress/> }
             {errorCreate && <Message severity='error'>{errorCreate}</Message>}
             {loading ? <LinearProgress/> : error ? <Message severity='error'>{error}</Message> :(
+                <>
                 <TableContainer>
                     <Table>
                         <TableHead>
@@ -101,6 +102,8 @@ const ProductListScreen = ({history, match}) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <Paginate pages={pages} page={page} isAdmin={true}/>
+                </>
             )}
         </>
     )
