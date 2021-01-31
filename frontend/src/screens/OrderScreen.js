@@ -2,13 +2,13 @@ import { Box, Button, Card, Divider, Grid, LinearProgress, List, ListItem, makeS
 import React, { useEffect, useState } from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import { Link } from 'react-router-dom'
-import {  getOrderDetails, payOrder } from '../actions/orderActions'
+import {  deliverOrder, getOrderDetails, payOrder } from '../actions/orderActions'
 import CheckoutSteps from '../components/CheckoutSteps'
 import FormContainer from '../components/FormContainer'
 import Message from '../components/Message'
 import axios from 'axios'
 import { PayPalButton} from 'react-paypal-button-v2'
-import { ORDER_PAY_RESET } from '../constants/orderConstants'
+import { ORDER_DELIVER_RESET, ORDER_PAY_RESET } from '../constants/orderConstants'
 
 
 
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) =>({
     }
   }));
   
-const OrderScreen = ({match}) => {
+const OrderScreen = ({match, history}) => {
     const orderId = match.params.id
     const dispatch = useDispatch()
     const classes = useStyles()
@@ -26,14 +26,21 @@ const OrderScreen = ({match}) => {
     const [sdkReady, setSdkReady] = useState(false)
 
     const orderDetails = useSelector(state => state.orderDetails)
-
     const {order, loading, error} = orderDetails
 
     const orderPay = useSelector(state => state.orderPay)
-
     const {loading: loadingPay, success: successPay} = orderPay
 
+    const orderDeliver = useSelector(state => state.orderDeliver)
+    const { loading: loadingDeliver, success: successDeliver} = orderDeliver
+
+    const userLogin = useSelector(state => state.userLogin)
+    const { userInfo} = userLogin
+
     useEffect(()=>{
+        if(!userInfo){
+            history.push('/login')
+        }
         const addPayPalScript = async () => {
             const {data: clientId} = await axios.get('/api/config/paypal')
             const script = document.createElement('script')
@@ -46,8 +53,9 @@ const OrderScreen = ({match}) => {
             document.body.appendChild(script)
         }
 
-        if(!order || successPay || order._id !== orderId ){
+        if(!order || successPay || order._id !== orderId || successDeliver ){
             dispatch({ type: ORDER_PAY_RESET})
+            dispatch({ type: ORDER_DELIVER_RESET})
             dispatch(getOrderDetails(orderId))
         }else if(!order.isPaid){
             if(!window.paypal){
@@ -56,13 +64,16 @@ const OrderScreen = ({match}) => {
                 setSdkReady(true)
             }
         }
-    }, [order, dispatch, orderId, successPay])
+    }, [order, dispatch, orderId, successPay, successDeliver, userInfo])
    
     const successPaymentHandler = (paymentResult) =>{
         console.log(paymentResult)
         dispatch(payOrder(orderId, paymentResult))
     }
    
+    const deliverHandler = () => {
+        dispatch(deliverOrder(order))
+    }
     return (
         loading ? <LinearProgress/> : error ? <Message severity='error'>{error}</Message>:
         <>
@@ -160,7 +171,7 @@ const OrderScreen = ({match}) => {
                                     <Grid item xs>${order.totalPrice}</Grid>
                                 </Grid>
                             </ListItem>
-                            {!order.isPaid && (
+                            {userInfo && order.user && userInfo._id === order.user._id && !order.isPaid && (
                                 <ListItem>
                                     <div style={{width : '100%'}}>
                                     {loadingPay && <LinearProgress/>}
@@ -168,6 +179,18 @@ const OrderScreen = ({match}) => {
                                         <PayPalButton amount={order.totalPrice} onSuccess={successPaymentHandler}/>
                                     )}
                                     </div>
+                                </ListItem>
+                            )}
+                            {loadingDeliver && <LinearProgress/>}
+                            {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                                <ListItem>
+                                    <Button
+                                    style={{ backgroundColor: '#393836', color:'#fff'}}
+                                     variant='contained'
+                                     fullWidth
+                                     onClick={deliverHandler}>
+                                        Mark as delivered
+                                    </Button>
                                 </ListItem>
                             )}
                         </List>

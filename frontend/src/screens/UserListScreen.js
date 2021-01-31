@@ -58,7 +58,7 @@ const UserListScreen = ({history}) => {
                                     <TableCell><a className='link-style' href={`mailto:${user.email}`}>{user.email}</a></TableCell>
                                     <TableCell>{user.isAdmin ? <CheckIcon style={{ color: 'green'}}/>: <ClearIcon style={{ color: 'red'}}/>}</TableCell>
                                     <TableCell>
-                                        <Link to={`/admin/user/${user._id}/edit`}>
+                                        <Link className='link-style' to={`/admin/user/${user._id}/edit`}>
                                             <IconButton><EditIcon/></IconButton>
                                         </Link>
                                         <IconButton onClick={()=> deleteHandler(user._id)}><DeleteIcon/></IconButton>
