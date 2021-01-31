@@ -9,7 +9,8 @@ import { Link } from 'react-router-dom'
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
-import { listProducts, deleteProduct } from '../actions/productActions'
+import { listProducts, deleteProduct, createProduct } from '../actions/productActions'
+import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
 
 
 const ProductListScreen = ({history, match}) => {
@@ -20,17 +21,25 @@ const ProductListScreen = ({history, match}) => {
     const productDelete = useSelector(state => state.productDelete)
     const {error: errorDelete, loading: loadingDelete, success: successDelete} = productDelete
 
+    const productCreate = useSelector(state => state.productCreate)
+    const {error: errorCreate, loading: loadingCreate, success: successCreate, product: createdProduct} = productCreate
+
+
     const userLogin = useSelector(state => state.userLogin)
     const {userInfo} = userLogin
 
 
     useEffect(() => {
-        if(userInfo && userInfo.isAdmin){
-            dispatch(listProducts())
-        }else{
+        dispatch({type: PRODUCT_CREATE_RESET})
+        if(!userInfo.isAdmin){
             history.push('/login')
         }
-    },[dispatch, history, userInfo, successDelete])
+        if(successCreate){
+            history.push(`/admin/product/${createdProduct._id}/edit`)
+        }else{
+            dispatch(listProducts())
+        }
+    },[dispatch, history, userInfo, successDelete, createdProduct, successCreate])
 
     const deleteHandler = (id) => {
         if(window.confirm('Are you sure')){
@@ -38,7 +47,7 @@ const ProductListScreen = ({history, match}) => {
         }
     }
     const createProductHandler = () =>{
-
+        dispatch(createProduct())
 
     }
     return (
@@ -57,6 +66,8 @@ const ProductListScreen = ({history, match}) => {
             </Grid>
             {loadingDelete && <LinearProgress/> }
             {errorDelete && <Message severity='error'>{errorDelete}</Message>}
+            {loadingCreate && <LinearProgress/> }
+            {errorCreate && <Message severity='error'>{errorCreate}</Message>}
             {loading ? <LinearProgress/> : error ? <Message severity='error'>{error}</Message> :(
                 <TableContainer>
                     <Table>

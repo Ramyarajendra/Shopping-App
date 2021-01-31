@@ -48,7 +48,7 @@ const UserEditScreen = ({location, history, match}) => {
             }
         }
       
-    },[user, dispatch, userId, successUpdate])
+    },[user, dispatch, userId, history, successUpdate])
 
     const submitHandler = (e) =>{
         e.preventDefault()
