@@ -7,6 +7,7 @@ import {getUserDetails, updateUserProfile} from '../actions/userActions'
 import Message from '../components/Message';
 import { listMyOrders } from '../actions/orderActions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants';
 
 
 const useStyles = makeStyles((theme) =>({
@@ -46,7 +47,8 @@ const ProfileScreen = ({location, history}) => {
         if(!userInfo){
             history.push('/login')
         }else{
-            if(!user.name){
+            if( !user || !user.name || success){
+                dispatch( { type: USER_UPDATE_PROFILE_RESET})
                 dispatch(getUserDetails('profile'))
                 dispatch(listMyOrders())
             }else{
@@ -54,7 +56,7 @@ const ProfileScreen = ({location, history}) => {
                 setEmail(user.email)
             }
         }
-    },[history, userInfo, dispatch, user])
+    },[history, userInfo, dispatch, user, success])
 
     const submitHandler = (e) =>{
         e.preventDefault()

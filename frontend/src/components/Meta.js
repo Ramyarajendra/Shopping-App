@@ -12,7 +12,7 @@ const Meta = ({title, description, keywords}) => {
 }
 
 Meta.defaultProps = {
-    title: 'Shopping App',
+    title: 'Welcome To ShopOn',
     description: 'We sell the best products',
     keywords: 'electronics, buy electronics, cheap electronics'
 }

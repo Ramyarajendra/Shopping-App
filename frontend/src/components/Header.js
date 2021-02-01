@@ -58,7 +58,7 @@ const Header = () => {
                 <Toolbar>
                 <Link to='/' className='link-style'>
                   <Typography variant="h6" className={classes.title}>
-                      Shopping App
+                      ShopOn
                   </Typography>
                 </Link>
                 <Route render={({history})=> <SearchBox history={history}/> }/> 

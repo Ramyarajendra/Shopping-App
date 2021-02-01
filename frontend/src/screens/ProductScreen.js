@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'
 import { createProductReview, listProductDetails } from '../actions/productActions';
 import Message from '../components/Message';
+import Meta from '../components/Meta';
 import Ratings from '../components/Ratings';
 import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/productConstants';
 
@@ -75,6 +76,7 @@ const ProductScreen = ({history, match}) => {
             </Link>
             {loading ? <LinearProgress/> : error ? <Message severity='error'>{error}</Message>: (
                 <div>
+                <Meta title={product.name}/>
                 <Grid container spacing={2} className={classes.gridclass}>
                     <Grid item xs={12} md={6}>
                         <img src={product.image} alt={product.name} width='100%' height='auto'/>
