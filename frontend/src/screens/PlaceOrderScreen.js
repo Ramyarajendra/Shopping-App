@@ -6,6 +6,7 @@ import { createOrder } from '../actions/orderActions'
 import CheckoutSteps from '../components/CheckoutSteps'
 import FormContainer from '../components/FormContainer'
 import Message from '../components/Message'
+import { CART_RESET } from '../constants/cartConstants'
 
 
 
@@ -56,6 +57,10 @@ const PlaceOrderScreen = ({history}) => {
             totalPrice: cart.totalPrice
 
         }))
+        localStorage.removeItem('cartItems')
+        dispatch({
+            type: CART_RESET
+        })
     }
     return (
         <>

@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Header = () => {
+const Header = ({history}) => {
     const classes = useStyles();
     const dispatch = useDispatch()
     const userLogin = useSelector(state => state.userLogin)
@@ -49,7 +49,7 @@ const Header = () => {
     const logoutHandler = () => {
       handleClose()
       dispatch(logout())
-
+      history.push('/login')
     }
     return (
         <div className={classes.root}>

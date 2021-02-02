@@ -22,7 +22,7 @@ import OrderListScreen from './screens/OrderListScreen';
 function App() {
   return (
     <Router>
-     <Header/>
+      <Route render={ ({history}) => <Header history={history}/>}/>
      <main>
        <Container>
           <Route path='/login' component={LoginScreen} />
