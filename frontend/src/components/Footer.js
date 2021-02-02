@@ -6,7 +6,7 @@ const Footer = () => {
         <div>
             <Container>
                 <Box display='flex' justifyContent='center' >
-                    <Box>Copyright &copy; Shopping App</Box>
+                    <Box>Copyright &copy; ShopOn</Box>
                 </Box>
             </Container>
         </div>
